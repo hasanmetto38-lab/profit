@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Profit Puls Dynamic Sitemap</title>
+</head>
+<body>
+<pre id="sitemap"></pre>
+
+<script>
+async function generateSitemap() {
+    const feedUrl = "https://profitpuls9.blogspot.com/feeds/posts/default?alt=json";
+    const response = await fetch(feedUrl);
+    const data = await response.json();
+    const posts = data.feed.entry;
+    
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+    // الصفحة الرئيسية
+    xml += `  <url>\n`;
+    xml += `    <loc>https://profitpuls9.blogspot.com/</loc>\n`;
+    xml += `    <changefreq>daily</changefreq>\n`;
+    xml += `    <priority>1.0</priority>\n`;
+    xml += `  </url>\n`;
+
+    // كل التدوينات
+    posts.forEach(post => {
+        const link = post.link.find(l => l.rel === "alternate").href;
+        const updated = post.updated.$t.substring(0, 10);
+        xml += `  <url>\n`;
+        xml += `    <loc>${link}</loc>\n`;
+        xml += `    <lastmod>${updated}</lastmod>\n`;
+        xml += `    <changefreq>weekly</changefreq>\n`;
+        xml += `    <priority>0.8</priority>\n`;
+        xml += `  </url>\n`;
+    });
+
+    xml += `</urlset>`;
+    document.getElementById("sitemap").textContent = xml;
+}
+
+generateSitemap();
+</script>
+</body>
+</html>
